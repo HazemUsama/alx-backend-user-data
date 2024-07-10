@@ -17,7 +17,12 @@ class Auth():
         Returns:
             - True if authentication is required, False otherwise.
         """
-        return False
+        if path is None or not excluded_paths:
+            return True
+
+        if path[-1] != '/':
+            path = path + '/'
+        return path not in excluded_paths
 
     def authorization_header(self, request=None) -> str:
         """ Authorization header.
