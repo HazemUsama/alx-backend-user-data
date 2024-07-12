@@ -3,6 +3,7 @@
 """
 from api.v1.auth.session_exp_auth import SessionExpAuth
 from models.user_session import UserSession
+from datetime import datetime
 
 
 class SessionDBAuth(SessionExpAuth):
@@ -22,19 +23,20 @@ class SessionDBAuth(SessionExpAuth):
     def user_id_for_session_id(self, session_id=None):
         """ User ID for session ID
         """
+        UserSession.load_from_file()
         if session_id is None:
             return None
-        session_dictionary = UserSession.search({'session_id': session_id})
-        if session_dictionary is None:
+        user_session = UserSession.search({'session_id': session_id})
+        if user_session == []:
             return None
-        if self.session_duration <= 0:
-            return session_dictionary.get('user_id')
-        created_at = session_dictionary.get('created_at')
-        if created_at is None:
+        user_session = user_session[0]
+
+        if user_session.created_at is None:
             return None
-        if (datetime.now() - created_at).seconds > self.session_duration:
+        if ((datetime.utcnow() - user_session.created_at).seconds
+                > self.session_duration):
             return None
-        return session_dictionary.get('user_id')
+        return user_session.user_id
 
     def destroy_session(self, request=None):
         """ Destroy session
