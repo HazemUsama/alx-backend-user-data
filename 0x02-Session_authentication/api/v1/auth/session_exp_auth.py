@@ -26,7 +26,7 @@ class SessionExpAuth(SessionAuth):
             return None
         session_dictionary = {
             'user_id': user_id,
-            'created_at': datetime.now()
+            'created_at': datetime.utcnow()
         }
         self.user_id_by_session_id[session_id] = session_dictionary
         return session_id
@@ -45,6 +45,6 @@ class SessionExpAuth(SessionAuth):
         created_at = session_dictionary.get('created_at')
         if created_at is None:
             return None
-        if (datetime.now() - created_at).seconds > self.session_duration:
+        if (datetime.utcnow() - created_at).seconds > self.session_duration:
             return None
         return session_dictionary.get('user_id')
