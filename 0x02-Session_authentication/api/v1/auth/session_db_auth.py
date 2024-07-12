@@ -30,11 +30,13 @@ class SessionDBAuth(SessionExpAuth):
         if user_session == []:
             return None
         user_session = user_session[0]
+        created_at = user_session.created_at
 
-        if user_session.created_at is None:
+        if created_at is None:
             return None
-        if ((datetime.utcnow() - user_session.created_at).seconds
-                > self.session_duration):
+        if self.session_duration <= 0:
+            return user_session
+        if (datetime.utcnow() - created_at).seconds > self.session_duration:
             return None
         return user_session.user_id
 
