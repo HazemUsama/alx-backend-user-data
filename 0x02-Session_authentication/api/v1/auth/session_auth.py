@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Session authentication module"""
 from api.v1.auth.auth import Auth
+from models.user import User
 from uuid import uuid4
 
 
@@ -15,3 +16,9 @@ class SessionAuth(Auth):
         session_id = str(uuid4())
         self.user_id_by_session_id[session_id] = user_id
         return session_id
+
+    def user_id_for_session_id(self, session_id: str = None) -> str:
+        """Get a user ID from a session ID"""
+        if session_id is None or not isinstance(session_id, str):
+            return None
+        return self.user_id_by_session_id.get(session_id)
