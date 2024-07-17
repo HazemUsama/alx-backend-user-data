@@ -4,7 +4,8 @@
 import re
 from typing import List
 import logging
-import csv
+import os
+import mysql.connector
 
 
 PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'password')
@@ -46,7 +47,7 @@ def filter_datum(fields: List[str], redaction: str,
     return message
 
 
-def get_logger(self) -> logging.Logger:
+def get_logger() -> logging.Logger:
     """returns a logger object
     """
     logger = logging.getLogger('user_data')
@@ -57,3 +58,14 @@ def get_logger(self) -> logging.Logger:
     stream_handler.setFormatter(formatter)
     logger.addHandler(stream_handler)
     return logger
+
+
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """returns a connector to the database
+    """
+    return mysql.connector.connect(
+        user=os.getenv('PERSONAL_DATA_DB_USERNAME', 'root'),
+        password=os.getenv('PERSONAL_DATA_DB_PASSWORD', ''),
+        host=os.getenv('PERSONAL_DATA_DB_HOST', 'localhost'),
+        database=os.getenv('PERSONAL_DATA_DB_NAME')
+    )
